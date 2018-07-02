@@ -23,6 +23,26 @@ module Jekyll
       require 'rss'
       require 'cgi/util'
 
+      # Default settings
+      settings_defaults = {
+        "folder" => "posse",
+        "file_name" => "feed.xml",
+        "items_number" => 20,
+      }
+
+      destination_defaults = {
+        "max_length" => 280,
+        "url_length" => 23,
+        "post" => {
+          "min_hashtags" => 3,
+          "max_hashtags" => 5,
+          "template" => "@posse_title\n\n@posse_tags\n\n@posse_url",
+        },
+      }
+
+      settings = settings_defaults
+      settings = settings.merge(site.config["posseify"] || {})
+
       rss = RSS::Maker.make("atom") do |maker|
         maker.channel.title = site.config['name']
         maker.channel.link = site.config['url']
@@ -31,9 +51,7 @@ module Jekyll
         maker.channel.updated = Time.now
         maker.channel.copyright = site.config['copyright']
 
-        items_number = site.config['posseify_items_number'].nil? ? site.posts.docs.count : site.config['posseify_items_number'] - 1
-
-        site.posts.docs.reverse[0..items_number].each do |doc|
+        site.posts.docs.reverse[0..settings['items_number']].each do |doc|
           doc.read
           maker.items.new_item do |item|
             link = "#{site.config['url']}#{doc.url}"
@@ -55,8 +73,8 @@ module Jekyll
       end
 
       # File creation and writing
-      atom_path = ensure_slashes(site.config['atom_path'] || "/feeds/")
-      atom_name = site.config['atom_name'] || "atom.xml"
+      atom_path = ensure_slashes(settings['folder'])
+      atom_name = settings['file_name']
       full_path = File.join(site.dest, atom_path)
       ensure_dir(full_path)
 
