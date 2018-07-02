@@ -64,13 +64,8 @@ module Jekyll
             item.updated = doc.date
             item.pubDate = doc.date
 
-            item.summary = "<![CDATA[" + doc.data['excerpt'].to_s.gsub(%r{</?[^>]+?>}, '') + "]]>"
-
             # https://stackoverflow.com/a/26027221/717195
             item.content.content = doc.content
-
-            # the whole doc content, wrapped in CDATA tags
-            item.content_encoded = "<![CDATA[" + doc.content + "]]>"
           end
         end
       end
