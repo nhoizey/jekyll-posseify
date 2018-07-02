@@ -47,7 +47,10 @@ module Jekyll
         maker.channel.title = site.config['name']
         maker.channel.link = site.config['url']
         maker.channel.description = site.config['description'] || "Atom feed for #{site.config['name']}"
-        maker.channel.author = site.config["author"]
+        maker.channel.author do |author|
+          author.name = site.config["author"]
+          author.email = site.config["email"]
+        end
         maker.channel.updated = Time.now
         maker.channel.copyright = site.config['copyright']
 
